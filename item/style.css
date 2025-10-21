@@ -152,6 +152,16 @@ h1 {
     flex-wrap: wrap;
 }
 
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
 .calculator {
     display: grid;
     grid-template-columns: repeat(4, 1fr);

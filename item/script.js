@@ -1,9 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Elemen DOM
-    const setAInput = document.getElementById('setA');
-    const setBInput = document.getElementById('setB');
-    const setCInput = document.getElementById('setC');
+    const setInputContainer = document.getElementById('setInputContainer');
+    const calculator = document.getElementById('calculator');
     const addSetBtn = document.getElementById('addSet');
+    const removeSetBtn = document.getElementById('removeSet');
     const resetSetsBtn = document.getElementById('resetSets');
     const expressionDisplay = document.getElementById('expressionDisplay');
     const clearBtn = document.getElementById('clearBtn');
@@ -16,25 +16,201 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentExpression = '';
     let sets = {
         'A': { min: -6, max: -1 },
-        'B': { min: -1, max: 4 },
-        'C': { min: -1, max: 6 }
+        'B': { min: -1, max: 4 }
     };
-    let nextSetLetter = 'D';
-    
+    let nextSetLetter = 'C';
+    const maxSets = 8; // Maksimal himpunan yang bisa ditambahkan
+
+    // Inisialisasi
+    initializeCalculator();
+
+    function initializeCalculator() {
+        updateSets();
+        setupEventListeners();
+    }
+
+    function setupEventListeners() {
+        // Event listener untuk tombol kalkulator
+        calculator.addEventListener('click', function(e) {
+            if (e.target.getAttribute('data-set')) {
+                currentExpression += e.target.getAttribute('data-set');
+                updateExpressionDisplay();
+            } else if (e.target.getAttribute('data-operator')) {
+                currentExpression += e.target.getAttribute('data-operator');
+                updateExpressionDisplay();
+            }
+        });
+
+        // Event listener untuk contoh soal
+        document.querySelectorAll('.example-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                currentExpression = this.getAttribute('data-expr');
+                updateExpressionDisplay();
+            });
+        });
+
+        // Event listener untuk tombol aksi
+        addSetBtn.addEventListener('click', addNewSet);
+        removeSetBtn.addEventListener('click', removeLastSet);
+        resetSetsBtn.addEventListener('click', resetAllSets);
+        clearBtn.addEventListener('click', clearExpression);
+        solveBtn.addEventListener('click', solveExpression);
+    }
+
+    function updateExpressionDisplay() {
+        expressionDisplay.textContent = currentExpression || 'Ekspresi akan muncul di sini';
+    }
+
+    // Fungsi untuk menambah himpunan baru
+    function addNewSet() {
+        if (nextSetLetter > 'Z') {
+            alert('Tidak dapat menambah himpunan lebih dari 26');
+            return;
+        }
+
+        if (Object.keys(sets).length >= maxSets) {
+            alert(`Maksimal ${maxSets} himpunan yang dapat ditambahkan`);
+            return;
+        }
+
+        // Tambah input himpunan
+        const newSetInput = document.createElement('div');
+        newSetInput.className = 'set-input';
+        newSetInput.innerHTML = `
+            <label for="set${nextSetLetter}">Himpunan ${nextSetLetter}</label>
+            <input type="text" id="set${nextSetLetter}" placeholder="Contoh: 0 ≤ x ≤ 5" value="0 ≤ x ≤ 5">
+        `;
+        setInputContainer.appendChild(newSetInput);
+
+        // Tambah tombol di kalkulator
+        const newSetButton = document.createElement('button');
+        newSetButton.textContent = nextSetLetter;
+        newSetButton.setAttribute('data-set', nextSetLetter);
+        
+        // Temukan posisi sebelum tombol kurung pertama
+        const firstParen = calculator.querySelector('button[data-operator="("]');
+        calculator.insertBefore(newSetButton, firstParen);
+
+        // Inisialisasi himpunan baru
+        sets[nextSetLetter] = { min: 0, max: 5 };
+
+        // Update tombol hapus
+        updateRemoveButtonState();
+
+        // Pindah ke huruf berikutnya
+        nextSetLetter = String.fromCharCode(nextSetLetter.charCodeAt(0) + 1);
+    }
+
+    // Fungsi untuk menghapus himpunan terakhir
+    function removeLastSet() {
+        const setKeys = Object.keys(sets);
+        if (setKeys.length <= 2) {
+            alert('Minimal harus ada 2 himpunan');
+            return;
+        }
+
+        const lastSetKey = setKeys[setKeys.length - 1];
+        
+        // Hapus dari state
+        delete sets[lastSetKey];
+        
+        // Hapus input
+        const lastSetInput = document.getElementById(`set${lastSetKey}`);
+        if (lastSetInput) {
+            lastSetInput.parentElement.remove();
+        }
+        
+        // Hapus tombol dari kalkulator
+        const lastSetButton = calculator.querySelector(`button[data-set="${lastSetKey}"]`);
+        if (lastSetButton) {
+            lastSetButton.remove();
+        }
+
+        // Update current expression - hapus referensi ke himpunan yang dihapus
+        currentExpression = currentExpression.replace(new RegExp(lastSetKey, 'g'), '');
+        updateExpressionDisplay();
+
+        // Update next letter
+        nextSetLetter = lastSetKey;
+
+        // Update tombol hapus
+        updateRemoveButtonState();
+    }
+
+    function updateRemoveButtonState() {
+        removeSetBtn.disabled = Object.keys(sets).length <= 2;
+    }
+
+    // Fungsi untuk mereset semua himpunan
+    function resetAllSets() {
+        // Reset ke himpunan default A dan B
+        sets = {
+            'A': { min: -6, max: -1 },
+            'B': { min: -1, max: 4 }
+        };
+        nextSetLetter = 'C';
+
+        // Reset input
+        document.getElementById('setA').value = '-6 ≤ x ≤ -1';
+        document.getElementById('setB').value = '-1 ≤ x ≤ 4';
+
+        // Hapus himpunan tambahan
+        const setInputs = setInputContainer.querySelectorAll('.set-input');
+        for (let i = 2; i < setInputs.length; i++) {
+            setInputs[i].remove();
+        }
+
+        // Reset kalkulator - hapus tombol himpunan tambahan
+        const setButtons = calculator.querySelectorAll('button[data-set]');
+        setButtons.forEach(button => {
+            const setLetter = button.getAttribute('data-set');
+            if (setLetter > 'B') {
+                button.remove();
+            }
+        });
+
+        // Reset state lainnya
+        currentExpression = '';
+        expressionDisplay.textContent = 'Ekspresi akan muncul di sini';
+        resultDisplay.textContent = 'Hasil akan muncul di sini';
+        solutionSteps.innerHTML = '';
+        numberLineContainer.innerHTML = '';
+
+        // Update tombol hapus
+        updateRemoveButtonState();
+    }
+
+    function clearExpression() {
+        currentExpression = '';
+        updateExpressionDisplay();
+        resultDisplay.textContent = 'Hasil akan muncul di sini';
+        solutionSteps.innerHTML = '';
+        numberLineContainer.innerHTML = '';
+    }
+
+    function solveExpression() {
+        updateSets();
+        
+        if (!currentExpression) {
+            alert('Masukkan ekspresi himpunan terlebih dahulu');
+            return;
+        }
+        
+        try {
+            const result = evaluateSetExpression(currentExpression, sets);
+            displayResult(result, currentExpression);
+        } catch (error) {
+            alert('Error dalam mengevaluasi ekspresi: ' + error.message);
+        }
+    }
+
     // Fungsi untuk memperbarui set dari input
     function updateSets() {
         try {
-            sets.A = parseSetInput(setAInput.value);
-            sets.B = parseSetInput(setBInput.value);
-            sets.C = parseSetInput(setCInput.value);
-            
-            // Update himpunan tambahan
             for (const setName in sets) {
-                if (setName >= 'D') {
-                    const inputElement = document.getElementById(`set${setName}`);
-                    if (inputElement) {
-                        sets[setName] = parseSetInput(inputElement.value);
-                    }
+                const inputElement = document.getElementById(`set${setName}`);
+                if (inputElement) {
+                    sets[setName] = parseSetInput(inputElement.value);
                 }
             }
         } catch (error) {
@@ -77,119 +253,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return `{${elements.join(', ')}}`;
     }
-    
-    // Fungsi untuk menambah himpunan baru
-    addSetBtn.addEventListener('click', function() {
-        if (nextSetLetter > 'Z') {
-            alert('Tidak dapat menambah himpunan lebih dari 26');
-            return;
-        }
-        
-        const setInputContainer = document.querySelector('.set-input-container');
-        const newSetInput = document.createElement('div');
-        newSetInput.className = 'set-input';
-        newSetInput.innerHTML = `
-            <label for="set${nextSetLetter}">Himpunan ${nextSetLetter}</label>
-            <input type="text" id="set${nextSetLetter}" placeholder="Contoh: 0 ≤ x ≤ 5" value="0 ≤ x ≤ 5">
-        `;
-        setInputContainer.appendChild(newSetInput);
-        
-        // Tambah tombol untuk himpunan baru di kalkulator
-        const calculator = document.querySelector('.calculator');
-        const firstRow = calculator.querySelectorAll('button')[3]; // Tombol D
-        const newSetButton = document.createElement('button');
-        newSetButton.textContent = nextSetLetter;
-        newSetButton.setAttribute('data-set', nextSetLetter);
-        calculator.insertBefore(newSetButton, firstRow);
-        
-        // Inisialisasi himpunan baru
-        sets[nextSetLetter] = { min: 0, max: 5 };
-        
-        // Pindah ke huruf berikutnya
-        nextSetLetter = String.fromCharCode(nextSetLetter.charCodeAt(0) + 1);
-    });
-    
-    // Fungsi untuk mereset himpunan
-    resetSetsBtn.addEventListener('click', function() {
-        setAInput.value = '-6 ≤ x ≤ -1';
-        setBInput.value = '-1 ≤ x ≤ 4';
-        setCInput.value = '-1 ≤ x ≤ 6';
-        
-        // Hapus himpunan tambahan
-        const setInputs = document.querySelectorAll('.set-input');
-        for (let i = 3; i < setInputs.length; i++) {
-            setInputs[i].remove();
-        }
-        
-        // Reset kalkulator
-        const calculatorButtons = document.querySelectorAll('.calculator button[data-set]');
-        calculatorButtons.forEach(button => {
-            const setLetter = button.getAttribute('data-set');
-            if (setLetter > 'C') {
-                button.remove();
-            }
-        });
-        
-        // Reset state
-        sets = {
-            'A': { min: -6, max: -1 },
-            'B': { min: -1, max: 4 },
-            'C': { min: -1, max: 6 }
-        };
-        nextSetLetter = 'D';
-        currentExpression = '';
-        expressionDisplay.textContent = 'Ekspresi akan muncul di sini';
-        resultDisplay.textContent = 'Hasil akan muncul di sini';
-        solutionSteps.innerHTML = '';
-        numberLineContainer.innerHTML = '';
-    });
-    
-    // Fungsi untuk menangani klik tombol kalkulator
-    document.querySelectorAll('.calculator button').forEach(button => {
-        button.addEventListener('click', function() {
-            if (this.getAttribute('data-set')) {
-                currentExpression += this.getAttribute('data-set');
-            } else if (this.getAttribute('data-operator')) {
-                currentExpression += this.getAttribute('data-operator');
-            }
-            
-            expressionDisplay.textContent = currentExpression || 'Ekspresi akan muncul di sini';
-        });
-    });
-    
-    // Fungsi untuk contoh soal
-    document.querySelectorAll('.example-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            currentExpression = this.getAttribute('data-expr');
-            expressionDisplay.textContent = currentExpression;
-        });
-    });
-    
-    // Fungsi untuk menghapus ekspresi
-    clearBtn.addEventListener('click', function() {
-        currentExpression = '';
-        expressionDisplay.textContent = 'Ekspresi akan muncul di sini';
-        resultDisplay.textContent = 'Hasil akan muncul di sini';
-        solutionSteps.innerHTML = '';
-        numberLineContainer.innerHTML = '';
-    });
-    
-    // Fungsi untuk menyelesaikan ekspresi
-    solveBtn.addEventListener('click', function() {
-        updateSets();
-        
-        if (!currentExpression) {
-            alert('Masukkan ekspresi himpunan terlebih dahulu');
-            return;
-        }
-        
-        try {
-            const result = evaluateSetExpression(currentExpression, sets);
-            displayResult(result, currentExpression);
-        } catch (error) {
-            alert('Error dalam mengevaluasi ekspresi: ' + error.message);
-        }
-    });
     
     // Fungsi untuk mengevaluasi ekspresi himpunan
     function evaluateSetExpression(expression, sets) {
@@ -436,193 +499,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return explanationHTML;
     }
     
-    // Fungsi untuk evaluasi langkah demi langkah
-    function evaluateStepByStep(expression, sets) {
-        let stepsHTML = '';
-        let currentExpr = expression;
-        
-        // Evaluasi semua operasi dalam kurung terlebih dahulu
-        while (currentExpr.includes('(')) {
-            const openParen = currentExpr.lastIndexOf('(');
-            const closeParen = currentExpr.indexOf(')', openParen);
-            
-            if (closeParen === -1) {
-                throw new Error('Kurung tidak seimbang');
-            }
-            
-            const subExpr = currentExpr.substring(openParen + 1, closeParen);
-            const subResult = evaluate(subExpr, sets);
-            
-            let subResultText;
-            if (subResult.isUnionOfDisjointSets) {
-                const resultSets = [];
-                subResult.sets.forEach(set => {
-                    if (!isNaN(set.min) && !isNaN(set.max)) {
-                        resultSets.push(generateSetElements(set));
-                    }
-                });
-                subResultText = `(${resultSets.join(' ∪ ')})`;
-            } else if (isNaN(subResult.min) || isNaN(subResult.max)) {
-                subResultText = '{}';
-            } else {
-                subResultText = generateSetElements(subResult);
-            }
-            
-            stepsHTML += `<p class="explanation">Mengevaluasi ekspresi dalam kurung: ${subExpr}</p>`;
-            stepsHTML += `<p class="formula">${subExpr} = ${subResultText}</p>`;
-            
-            currentExpr = currentExpr.substring(0, openParen) + subResultText + currentExpr.substring(closeParen + 1);
-        }
-        
-        // Evaluasi operasi irisan dan gabungan
-        while (currentExpr.includes('∩') || currentExpr.includes('∪')) {
-            // Cari operasi pertama
-            const unionIndex = currentExpr.indexOf('∪');
-            const intersectionIndex = currentExpr.indexOf('∩');
-            
-            let opIndex, operator;
-            if (unionIndex !== -1 && intersectionIndex !== -1) {
-                if (unionIndex < intersectionIndex) {
-                    opIndex = unionIndex;
-                    operator = '∪';
-                } else {
-                    opIndex = intersectionIndex;
-                    operator = '∩';
-                }
-            } else if (unionIndex !== -1) {
-                opIndex = unionIndex;
-                operator = '∪';
-            } else {
-                opIndex = intersectionIndex;
-                operator = '∩';
-            }
-            
-            // Temukan operand kiri dan kanan
-            const leftPart = currentExpr.substring(0, opIndex);
-            const rightPart = currentExpr.substring(opIndex + 1);
-            
-            // Ekstrak operand kiri (dari kanan ke kiri)
-            let leftOperand = '';
-            let braceCount = 0;
-            for (let i = leftPart.length - 1; i >= 0; i--) {
-                if (leftPart[i] === '}') braceCount++;
-                if (leftPart[i] === '{') braceCount--;
-                
-                leftOperand = leftPart[i] + leftOperand;
-                
-                if (braceCount === 0 && (leftPart[i] === '{' || (leftPart[i] >= 'A' && leftPart[i] <= 'Z'))) {
-                    break;
-                }
-            }
-            
-            // Ekstrak operand kanan (dari kiri ke kanan)
-            let rightOperand = '';
-            braceCount = 0;
-            for (let i = 0; i < rightPart.length; i++) {
-                if (rightPart[i] === '{') braceCount++;
-                if (rightPart[i] === '}') braceCount--;
-                
-                rightOperand += rightPart[i];
-                
-                if (braceCount === 0 && (rightPart[i] === '}' || (rightPart[i] >= 'A' && rightPart[i] <= 'Z'))) {
-                    break;
-                }
-            }
-            
-            // Parse operand
-            let leftSet, rightSet;
-            
-            if (leftOperand === '{}') {
-                leftSet = { min: NaN, max: NaN };
-            } else if (leftOperand.includes('{')) {
-                // Parse dari format {a, b, c, ...}
-                const elements = leftOperand.replace('{', '').replace('}', '').split(', ').map(Number);
-                if (elements.length > 0 && !isNaN(elements[0])) {
-                    leftSet = { min: Math.min(...elements), max: Math.max(...elements) };
-                } else {
-                    leftSet = sets[leftOperand];
-                }
-            } else {
-                leftSet = sets[leftOperand];
-            }
-            
-            if (rightOperand === '{}') {
-                rightSet = { min: NaN, max: NaN };
-            } else if (rightOperand.includes('{')) {
-                // Parse dari format {a, b, c, ...}
-                const elements = rightOperand.replace('{', '').replace('}', '').split(', ').map(Number);
-                if (elements.length > 0 && !isNaN(elements[0])) {
-                    rightSet = { min: Math.min(...elements), max: Math.max(...elements) };
-                } else {
-                    rightSet = sets[rightOperand];
-                }
-            } else {
-                rightSet = sets[rightOperand];
-            }
-            
-            // Lakukan operasi
-            let result;
-            
-            if (operator === '∩') {
-                result = setIntersection(leftSet, rightSet);
-            } else {
-                result = setUnion(leftSet, rightSet);
-            }
-            
-            // Format hasil
-            let resultText;
-            if (result.isUnionOfDisjointSets) {
-                const resultSets = [];
-                result.sets.forEach(set => {
-                    if (!isNaN(set.min) && !isNaN(set.max)) {
-                        resultSets.push(generateSetElements(set));
-                    }
-                });
-                resultText = `${resultSets.join(' ∪ ')}`;
-            } else if (isNaN(result.min) || isNaN(result.max)) {
-                resultText = '{}';
-            } else {
-                resultText = generateSetElements(result);
-            }
-            
-            // Tampilkan langkah dengan penjelasan natural
-            if (operator === '∩') {
-                stepsHTML += `<p class="explanation">Melakukan operasi irisan antara ${leftOperand} dan ${rightOperand}</p>`;
-                
-                const leftElements = generateSetElements(leftSet);
-                const rightElements = generateSetElements(rightSet);
-                
-                stepsHTML += `<p>${leftOperand} = ${leftElements}</p>`;
-                stepsHTML += `<p>${rightOperand} = ${rightElements}</p>`;
-                
-                if (isNaN(result.min) || isNaN(result.max)) {
-                    stepsHTML += `<p>Tidak ada elemen yang sama antara kedua himpunan</p>`;
-                } else {
-                    stepsHTML += `<p>Elemen yang sama: ${resultText}</p>`;
-                }
-            } else {
-                stepsHTML += `<p class="explanation">Melakukan operasi gabungan antara ${leftOperand} dan ${rightOperand}</p>`;
-                
-                const leftElements = generateSetElements(leftSet);
-                const rightElements = generateSetElements(rightSet);
-                
-                stepsHTML += `<p>${leftOperand} = ${leftElements}</p>`;
-                stepsHTML += `<p>${rightOperand} = ${rightElements}</p>`;
-                stepsHTML += `<p>Gabungan semua elemen: ${resultText}</p>`;
-            }
-            
-            stepsHTML += `<p class="formula">${leftOperand} ${operator} ${rightOperand} = ${resultText}</p>`;
-            
-            // Ganti ekspresi dengan hasil
-            currentExpr = currentExpr.replace(
-                `${leftOperand}${operator}${rightOperand}`, 
-                resultText
-            );
-        }
-        
-        return stepsHTML;
-    }
-    
     // Fungsi untuk menggambar garis bilangan
     function drawNumberLine(result, expression) {
         // Tentukan rentang untuk garis bilangan
@@ -722,7 +598,4 @@ document.addEventListener('DOMContentLoaded', function() {
             numberLineMarkers.appendChild(resultInterval);
         }
     }
-    
-    // Inisialisasi
-    updateSets();
 });
