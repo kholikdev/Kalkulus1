@@ -20,7 +20,7 @@ const calculators = [
         title: 'himpunan pertidaksamaan',
         description: 'penyelesaian dari beberapa pertidaksamaan',
         icon: 'fas fa-th',
-        link: '#',
+        link: 'kalkulator_himpunan-persamaan/index.html',
         color: '#FF8E53'
     },
     {

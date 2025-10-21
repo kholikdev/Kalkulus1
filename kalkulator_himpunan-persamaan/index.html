@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Pertidaksamaan - kholikdev</title>
+    <link rel="stylesheet" href="item/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Back Button -->
+        <div class="back-container">
+            <a href="../index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Kembali ke Halaman Utama
+            </a>
+        </div>
+
+        <header>
+            <h1>Kalkulator Pertidaksamaan</h1>
+            <p class="subtitle">Menyelesaikan berbagai jenis pertidaksamaan dengan dua metode</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="card">
+                    <h2 class="card-title">Jenis Pertidaksamaan</h2>
+                    <div class="type-selector">
+                        <select id="problemType" class="type-select">
+                            <option value="linear">Linear (ax + b < cx + d)</option>
+                            <option value="double">Pertidaksamaan Ganda (a < bx + c < d)</option>
+                            <option value="rational">Rasional (1/x < 2/(x-4))</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="card-title">Input Pertidaksamaan</h2>
+                    <div class="input-container">
+                        <div id="dynamicInputs">
+                            <!-- Input fields will be dynamically generated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="method-selector">
+                        <h4>Pilih Metode Penyelesaian:</h4>
+                        <div class="method-buttons">
+                            <button class="method-btn active" data-method="pindah-ruas">
+                                <i class="fas fa-arrows-alt-h"></i>
+                                Metode Pindah Ruas
+                            </button>
+                            <button class="method-btn" data-method="samaratakan">
+                                <i class="fas fa-balance-scale"></i>
+                                Metode Disamaratakan
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="example-problems">
+                        <h4>Contoh Soal:</h4>
+                        <div class="example-buttons" id="exampleButtons">
+                            <!-- Example buttons will be dynamically generated -->
+                        </div>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button id="solveBtn" class="btn btn-primary">
+                            <i class="fas fa-calculator"></i>
+                            Selesaikan
+                        </button>
+                        <button id="clearBtn" class="btn btn-warning">
+                            <i class="fas fa-broom"></i>
+                            Bersihkan
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <div class="card">
+                    <h2 class="card-title">Hasil dan Penyelesaian</h2>
+                    <div class="result-container">
+                        <h3>Soal:</h3>
+                        <div class="problem-display" id="problemDisplay">
+                            Soal akan muncul di sini
+                        </div>
+                        <h3>Himpunan Penyelesaian:</h3>
+                        <div class="result" id="result">
+                            Hasil akan muncul di sini
+                        </div>
+                    </div>
+                    
+                    <div class="solution-steps" id="solutionSteps">
+                        <!-- Langkah-langkah penyelesaian akan dimasukkan di sini -->
+                    </div>
+                    
+                    <div class="solution-representation" id="solutionRepresentation">
+                        <!-- Representasi himpunan penyelesaian -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="item/script.js"></script>
+</body>
+</html>
