@@ -573,6 +573,83 @@ h1 {
     color: var(--light-orange);
 }
 
+/* Additional styles for solution summary */
+.solution-summary {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+.solution-summary .math-expression {
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: rgba(255, 107, 53, 0.1);
+    border-radius: 6px;
+    border-left: 3px solid var(--orange);
+    font-family: 'Cambria Math', serif;
+    font-size: 1rem;
+    text-align: left;
+}
+
+/* Improved number line styles */
+.number-line {
+    position: relative;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.number-line-point {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background: #4CAF50;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+}
+
+.number-line-point.filled {
+    border: 2px solid white;
+}
+
+.number-line-point.hollow {
+    background: transparent;
+    border: 2px solid #4CAF50;
+}
+
+.number-line-range {
+    position: absolute;
+    height: 10px;
+    background: #4CAF50;
+    border-radius: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+
+.number-line-label {
+    position: absolute;
+    top: -25px;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+    color: var(--light-orange);
+    font-weight: bold;
+}
+
+.number-line-endpoint {
+    position: absolute;
+    top: 35px;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 10px;

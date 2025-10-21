@@ -301,6 +301,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Helper functions
+    function getInverseOperator(operator) {
+        switch(operator) {
+            case '<': return '>';
+            case '<=': return '>=';
+            case '>': return '<';
+            case '>=': return '<=';
+            default: return operator;
+        }
+    }
+
     // Linear Inequality Solver
     function solveLinearInequality() {
         const a = parseFloat(document.getElementById('linearA').value) || 0;
@@ -344,16 +355,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const coefDiff = a - c;
         const constantDiff = d - b;
 
+        // Collect solution steps for final summary
+        let solutionSteps = [];
+
         if (currentMethod === 'pindah-ruas') {
+            // Step 1: Original equation
+            solutionSteps.push(`${a}x ${b >= 0 ? '+' : ''} ${b} ${operator} ${c}x ${d >= 0 ? '+' : ''} ${d}`);
+            
             if (c !== 0) {
                 steps += `<div class="step"><h4>Langkah 2: Pindah Ruas - Pindahkan ${c}x ke kiri</h4>`;
                 steps += `<p class="math-expression">\\(${leftSide} ${operator} ${rightSide}\\)</p>`;
                 steps += `<p class="explanation">${c}x dipindah ruas ke kiri dan karena dulunya + dan pindah ruas jadinya -:</p>`;
                 steps += `<p class="math-expression">\\(${a}x - ${c}x ${b >= 0 ? '+' : ''} ${b} ${operator} ${d}\\)</p></div>`;
                 
+                solutionSteps.push(`${a}x - ${c}x ${b >= 0 ? '+' : ''} ${b} ${operator} ${d}`);
+                
                 steps += `<div class="step"><h4>Langkah 3: Sederhanakan</h4>`;
                 steps += `<p class="math-expression">\\(${a}x - ${c}x\\) menjadi \\(${coefDiff}x\\):</p>`;
                 steps += `<p class="math-expression">\\(${coefDiff}x ${b >= 0 ? '+' : ''} ${b} ${operator} ${d}\\)</p></div>`;
+                
+                solutionSteps.push(`${coefDiff}x ${b >= 0 ? '+' : ''} ${b} ${operator} ${d}`);
             }
 
             if (b !== 0) {
@@ -361,6 +382,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 steps += `<p class="explanation">${b} dipindah ruas ke kanan:</p>`;
                 steps += `<p class="math-expression">\\(${coefDiff !== 0 ? coefDiff + 'x' : ''} ${operator} ${d} - ${b}\\)</p>`;
                 steps += `<p class="math-expression">\\(${coefDiff !== 0 ? coefDiff + 'x' : ''} ${operator} ${constantDiff}\\)</p></div>`;
+                
+                solutionSteps.push(`${coefDiff !== 0 ? coefDiff + 'x' : ''} ${operator} ${d} - ${b}`);
+                solutionSteps.push(`${coefDiff !== 0 ? coefDiff + 'x' : ''} ${operator} ${constantDiff}`);
             }
 
             steps += `<div class="step"><h4>Langkah 5: Selesaikan untuk x</h4>`;
@@ -391,21 +415,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 steps += `<p class="math-expression">\\(0 ${operator} ${constantDiff}\\)</p>`;
                 steps += `<p class="math-expression">${result}</p></div>`;
             } else {
-                steps += `<p class="explanation">${coefDiff} dibelakang x artinya dikali, jadi kalau pindah ruas jadinya bagi:</p>`;
-                steps += `<p class="math-expression">\\(x ${getInverseOperator(operator)} \\frac{${constantDiff}}{${coefDiff}}\\)</p>`;
-                const solution = constantDiff / coefDiff;
-                steps += `<p class="math-expression">\\(x ${getInverseOperator(operator)} ${solution}\\)</p></div>`;
+                // PERBAIKAN: hanya balik tanda jika coefDiff negatif
+                let finalOperator = operator;
+                if (coefDiff < 0) {
+                    finalOperator = getInverseOperator(operator);
+                }
                 
-                result = `x ${getInverseOperator(operator)} ${solution}`;
+                steps += `<p class="explanation">${coefDiff} dibelakang x artinya dikali, jadi kalau pindah ruas jadinya bagi${coefDiff < 0 ? ' (karena dibagi bilangan negatif, tanda pertidaksamaan dibalik)' : ''}:</p>`;
+                steps += `<p class="math-expression">\\(x ${finalOperator} \\frac{${constantDiff}}{${coefDiff}}\\)</p>`;
+                const solution = constantDiff / coefDiff;
+                steps += `<p class="math-expression">\\(x ${finalOperator} ${solution}\\)</p></div>`;
+                
+                solutionSteps.push(`x ${finalOperator} ${constantDiff}/${coefDiff}`);
+                solutionSteps.push(`x ${finalOperator} ${solution}`);
+                
+                result = `x ${finalOperator} ${solution}`;
             }
         } else {
             // Method: Disamaratakan
+            solutionSteps.push(`${a}x ${b >= 0 ? '+' : ''} ${b} ${operator} ${c}x ${d >= 0 ? '+' : ''} ${d}`);
+            
             if (c !== 0) {
                 steps += `<div class="step"><h4>Langkah 2: Hilangkan ${c}x di kanan dengan invers</h4>`;
                 steps += `<p class="math-expression">\\(${leftSide} ${operator} ${rightSide}\\)</p>`;
                 steps += `<p class="explanation">Kita hilangkan dulu ${c}x di kanan dengan menambahkan -${c}x di kedua ruas:</p>`;
                 steps += `<p class="math-expression">\\(${a}x ${b >= 0 ? '+' : ''} ${b} - ${c}x ${operator} ${c}x ${d >= 0 ? '+' : ''} ${d} - ${c}x\\)</p>`;
                 steps += `<p class="math-expression">\\(${coefDiff}x ${b >= 0 ? '+' : ''} ${b} ${operator} ${d}\\)</p></div>`;
+                
+                solutionSteps.push(`${a}x ${b >= 0 ? '+' : ''} ${b} - ${c}x ${operator} ${c}x ${d >= 0 ? '+' : ''} ${d} - ${c}x`);
+                solutionSteps.push(`${coefDiff}x ${b >= 0 ? '+' : ''} ${b} ${operator} ${d}`);
             }
 
             if (b !== 0) {
@@ -413,6 +451,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 steps += `<p class="explanation">Kita hilangkan ${b} dengan menambahkan -${b} di kedua ruas:</p>`;
                 steps += `<p class="math-expression">\\(${coefDiff}x ${b >= 0 ? '+' : ''} ${b} - ${b} ${operator} ${d} - ${b}\\)</p>`;
                 steps += `<p class="math-expression">\\(${coefDiff}x ${operator} ${constantDiff}\\)</p></div>`;
+                
+                solutionSteps.push(`${coefDiff}x ${b >= 0 ? '+' : ''} ${b} - ${b} ${operator} ${d} - ${b}`);
+                solutionSteps.push(`${coefDiff}x ${operator} ${constantDiff}`);
             }
 
             steps += `<div class="step"><h4>Langkah 4: Selesaikan untuk x</h4>`;
@@ -443,13 +484,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 steps += `<p class="math-expression">\\(0 ${operator} ${constantDiff}\\)</p>`;
                 steps += `<p class="math-expression">${result}</p></div>`;
             } else {
-                steps += `<p class="explanation">Karena di kiri masih ${coefDiff}x, untuk menghilangkan ${coefDiff}-nya kita bagi kedua ruas dengan ${coefDiff}:</p>`;
-                steps += `<p class="math-expression">\\(\\frac{${coefDiff}x}{${coefDiff}} ${operator} \\frac{${constantDiff}}{${coefDiff}}\\)</p>`;
-                const solution = constantDiff / coefDiff;
-                steps += `<p class="math-expression">\\(x ${getInverseOperator(operator)} ${solution}\\)</p></div>`;
+                // PERBAIKAN: hanya balik tanda jika coefDiff negatif
+                let finalOperator = operator;
+                if (coefDiff < 0) {
+                    finalOperator = getInverseOperator(operator);
+                }
                 
-                result = `x ${getInverseOperator(operator)} ${solution}`;
+                steps += `<p class="explanation">Karena di kiri masih ${coefDiff}x, untuk menghilangkan ${coefDiff}-nya kita bagi kedua ruas dengan ${coefDiff}${coefDiff < 0 ? ' (karena dibagi bilangan negatif, tanda pertidaksamaan dibalik)' : ''}:</p>`;
+                steps += `<p class="math-expression">\\(\\frac{${coefDiff}x}{${coefDiff}} ${finalOperator} \\frac{${constantDiff}}{${coefDiff}}\\)</p>`;
+                const solution = constantDiff / coefDiff;
+                steps += `<p class="math-expression">\\(x ${finalOperator} ${solution}\\)</p></div>`;
+                
+                solutionSteps.push(`\\frac{${coefDiff}x}{${coefDiff}} ${finalOperator} \\frac{${constantDiff}}{${coefDiff}}`);
+                solutionSteps.push(`x ${finalOperator} ${solution}`);
+                
+                result = `x ${finalOperator} ${solution}`;
             }
+        }
+        
+        // Add final solution summary
+        if (solutionSteps.length > 0) {
+            steps += `<div class="step"><h4>Langkah Akhir: Ringkasan Penyelesaian</h4>`;
+            steps += `<p class="explanation">Berikut adalah langkah-langkah penyelesaian yang dapat ditulis:</p>`;
+            steps += `<div class="solution-summary">`;
+            solutionSteps.forEach((step, index) => {
+                steps += `<p class="math-expression">${index + 1}. \\(${step}\\)</p>`;
+            });
+            steps += `</div></div>`;
         }
         
         steps += `<div class="step"><p class="final-answer">Jawaban: \\(${result}\\)</p></div>`;
@@ -469,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return { problem, result, steps, representations };
     }
 
-    // Double Inequality Solver
+    // Double Inequality Solver - DIPERBAIKI
     function solveDoubleInequality() {
         const a = parseFloat(document.getElementById('doubleA').value) || 0;
         const b = parseFloat(document.getElementById('doubleB').value) || 1;
@@ -484,37 +545,54 @@ document.addEventListener('DOMContentLoaded', function() {
         let result = '';
         let representations = '';
 
+        // Collect solution steps for final summary
+        let solutionSteps = [];
+
+        // Periksa tanda b (koefisien x)
+        const leftConstant = a - c;
+        const rightConstant = d - c;
+        const leftBound = leftConstant / b;
+        const rightBound = rightConstant / b;
+
         if (currentMethod === 'pindah-ruas') {
             steps += `<div class="step"><h4>Langkah 2: Pisahkan pertidaksamaan ganda</h4>`;
             steps += `<p class="math-expression">\\(${a} < ${b}x ${c >= 0 ? '+' : ''} ${c} < ${d}\\)</p>`;
             steps += `<p class="explanation">Pisahkan menjadi dua pertidaksamaan:</p>`;
             steps += `<p class="math-expression">\\(${a} < ${b}x ${c >= 0 ? '+' : ''} ${c}\\) dan \\(${b}x ${c >= 0 ? '+' : ''} ${c} < ${d}\\)</p></div>`;
             
+            solutionSteps.push(`${a} < ${b}x ${c >= 0 ? '+' : ''} ${c} < ${d}`);
+            solutionSteps.push(`${a} < ${b}x ${c >= 0 ? '+' : ''} ${c} \\quad \\text{dan} \\quad ${b}x ${c >= 0 ? '+' : ''} ${c} < ${d}`);
+            
+            // Selesaikan pertidaksamaan pertama
             steps += `<div class="step"><h4>Langkah 3: Selesaikan pertidaksamaan pertama</h4>`;
             steps += `<p class="math-expression">\\(${a} < ${b}x ${c >= 0 ? '+' : ''} ${c}\\)</p>`;
             steps += `<p class="explanation">Pindah ruas ${c} ke kiri:</p>`;
             steps += `<p class="math-expression">\\(${a} - ${c} < ${b}x\\)</p>`;
-            const leftConstant = a - c;
             steps += `<p class="math-expression">\\(${leftConstant} < ${b}x\\)</p>`;
-            steps += `<p class="math-expression">\\(x > \\frac{${leftConstant}}{${b}}\\)</p></div>`;
             
+            if (b > 0) {
+                steps += `<p class="math-expression">\\(x > \\frac{${leftConstant}}{${b}}\\)</p></div>`;
+                solutionSteps.push(`x > \\frac{${leftConstant}}{${b}}`);
+            } else {
+                steps += `<p class="math-expression">\\(x < \\frac{${leftConstant}}{${b}}\\) (tanda dibalik karena dibagi bilangan negatif)</p></div>`;
+                solutionSteps.push(`x < \\frac{${leftConstant}}{${b}}`);
+            }
+            
+            // Selesaikan pertidaksamaan kedua
             steps += `<div class="step"><h4>Langkah 4: Selesaikan pertidaksamaan kedua</h4>`;
             steps += `<p class="math-expression">\\(${b}x ${c >= 0 ? '+' : ''} ${c} < ${d}\\)</p>`;
             steps += `<p class="explanation">Pindah ruas ${c} ke kanan:</p>`;
             steps += `<p class="math-expression">\\(${b}x < ${d} - ${c}\\)</p>`;
-            const rightConstant = d - c;
             steps += `<p class="math-expression">\\(${b}x < ${rightConstant}\\)</p>`;
-            steps += `<p class="math-expression">\\(x < \\frac{${rightConstant}}{${b}}\\)</p></div>`;
             
-            const leftBound = leftConstant / b;
-            const rightBound = rightConstant / b;
+            if (b > 0) {
+                steps += `<p class="math-expression">\\(x < \\frac{${rightConstant}}{${b}}\\)</p></div>`;
+                solutionSteps.push(`x < \\frac{${rightConstant}}{${b}}`);
+            } else {
+                steps += `<p class="math-expression">\\(x > \\frac{${rightConstant}}{${b}}\\) (tanda dibalik karena dibagi bilangan negatif)</p></div>`;
+                solutionSteps.push(`x > \\frac{${rightConstant}}{${b}}`);
+            }
             
-            steps += `<div class="step"><h4>Langkah 5: Gabungkan solusi</h4>`;
-            steps += `<p class="explanation">Iriskan kedua solusi:</p>`;
-            steps += `<p class="math-expression">\\(x > ${leftBound}\\) dan \\(x < ${rightBound}\\)</p>`;
-            steps += `<p class="math-expression">\\(${leftBound} < x < ${rightBound}\\)</p></div>`;
-            
-            result = `${leftBound} < x < ${rightBound}`;
         } else {
             // Method: Disamaratakan
             steps += `<div class="step"><h4>Langkah 2: Pisahkan pertidaksamaan ganda</h4>`;
@@ -522,45 +600,90 @@ document.addEventListener('DOMContentLoaded', function() {
             steps += `<p class="explanation">Pisahkan menjadi dua pertidaksamaan:</p>`;
             steps += `<p class="math-expression">\\(${a} < ${b}x ${c >= 0 ? '+' : ''} ${c}\\) dan \\(${b}x ${c >= 0 ? '+' : ''} ${c} < ${d}\\)</p></div>`;
             
+            solutionSteps.push(`${a} < ${b}x ${c >= 0 ? '+' : ''} ${c} < ${d}`);
+            solutionSteps.push(`${a} < ${b}x ${c >= 0 ? '+' : ''} ${c} \\quad \\text{dan} \\quad ${b}x ${c >= 0 ? '+' : ''} ${c} < ${d}`);
+            
+            // Selesaikan pertidaksamaan pertama
             steps += `<div class="step"><h4>Langkah 3: Selesaikan pertidaksamaan pertama</h4>`;
             steps += `<p class="math-expression">\\(${a} < ${b}x ${c >= 0 ? '+' : ''} ${c}\\)</p>`;
             steps += `<p class="explanation">Kurangi ${c} di kedua ruas:</p>`;
             steps += `<p class="math-expression">\\(${a} - ${c} < ${b}x ${c >= 0 ? '+' : ''} ${c} - ${c}\\)</p>`;
-            const leftConstant = a - c;
             steps += `<p class="math-expression">\\(${leftConstant} < ${b}x\\)</p>`;
-            steps += `<p class="explanation">Bagi kedua ruas dengan ${b}:</p>`;
-            steps += `<p class="math-expression">\\(\\frac{${leftConstant}}{${b}} < x\\)</p></div>`;
             
+            if (b > 0) {
+                steps += `<p class="explanation">Bagi kedua ruas dengan ${b}:</p>`;
+                steps += `<p class="math-expression">\\(\\frac{${leftConstant}}{${b}} < x\\)</p></div>`;
+                solutionSteps.push(`\\frac{${leftConstant}}{${b}} < x`);
+            } else {
+                steps += `<p class="explanation">Bagi kedua ruas dengan ${b} (tanda dibalik karena dibagi bilangan negatif):</p>`;
+                steps += `<p class="math-expression">\\(\\frac{${leftConstant}}{${b}} > x\\)</p></div>`;
+                solutionSteps.push(`\\frac{${leftConstant}}{${b}} > x`);
+            }
+            
+            // Selesaikan pertidaksamaan kedua
             steps += `<div class="step"><h4>Langkah 4: Selesaikan pertidaksamaan kedua</h4>`;
             steps += `<p class="math-expression">\\(${b}x ${c >= 0 ? '+' : ''} ${c} < ${d}\\)</p>`;
             steps += `<p class="explanation">Kurangi ${c} di kedua ruas:</p>`;
             steps += `<p class="math-expression">\\(${b}x ${c >= 0 ? '+' : ''} ${c} - ${c} < ${d} - ${c}\\)</p>`;
-            const rightConstant = d - c;
             steps += `<p class="math-expression">\\(${b}x < ${rightConstant}\\)</p>`;
-            steps += `<p class="explanation">Bagi kedua ruas dengan ${b}:</p>`;
-            steps += `<p class="math-expression">\\(x < \\frac{${rightConstant}}{${b}}\\)</p></div>`;
             
-            const leftBound = leftConstant / b;
-            const rightBound = rightConstant / b;
-            
-            steps += `<div class="step"><h4>Langkah 5: Gabungkan solusi</h4>`;
-            steps += `<p class="explanation">Iriskan kedua solusi:</p>`;
-            steps += `<p class="math-expression">\\(\\frac{${leftConstant}}{${b}} < x\\) dan \\(x < \\frac{${rightConstant}}{${b}}\\)</p>`;
+            if (b > 0) {
+                steps += `<p class="explanation">Bagi kedua ruas dengan ${b}:</p>`;
+                steps += `<p class="math-expression">\\(x < \\frac{${rightConstant}}{${b}}\\)</p></div>`;
+                solutionSteps.push(`x < \\frac{${rightConstant}}{${b}}`);
+            } else {
+                steps += `<p class="explanation">Bagi kedua ruas dengan ${b} (tanda dibalik karena dibagi bilangan negatif):</p>`;
+                steps += `<p class="math-expression">\\(x > \\frac{${rightConstant}}{${b}}\\)</p></div>`;
+                solutionSteps.push(`x > \\frac{${rightConstant}}{${b}}`);
+            }
+        }
+        
+        // Gabungkan solusi
+        steps += `<div class="step"><h4>Langkah 5: Gabungkan solusi</h4>`;
+        steps += `<p class="explanation">Iriskan kedua solusi:</p>`;
+        
+        // Susun hasil akhir berdasarkan tanda b
+        if (b > 0) {
+            steps += `<p class="math-expression">\\(x > ${leftBound}\\) dan \\(x < ${rightBound}\\)</p>`;
             steps += `<p class="math-expression">\\(${leftBound} < x < ${rightBound}\\)</p></div>`;
-            
+            solutionSteps.push(`x > ${leftBound} \\quad \\text{dan} \\quad x < ${rightBound}`);
+            solutionSteps.push(`${leftBound} < x < ${rightBound}`);
             result = `${leftBound} < x < ${rightBound}`;
+        } else {
+            steps += `<p class="math-expression">\\(x < ${leftBound}\\) dan \\(x > ${rightBound}\\)</p>`;
+            // Karena tidak mungkin x < kecil DAN x > besar, periksa validitas
+            if (leftBound < rightBound) {
+                steps += `<p class="math-expression">Tidak ada solusi (irisan kosong)</p></div>`;
+                solutionSteps.push(`x < ${leftBound} \\quad \\text{dan} \\quad x > ${rightBound}`);
+                solutionSteps.push(`\\text{Tidak ada solusi}`);
+                result = 'Tidak ada solusi';
+            } else {
+                steps += `<p class="math-expression">\\(${rightBound} < x < ${leftBound}\\)</p></div>`;
+                solutionSteps.push(`x < ${leftBound} \\quad \\text{dan} \\quad x > ${rightBound}`);
+                solutionSteps.push(`${rightBound} < x < ${leftBound}`);
+                result = `${rightBound} < x < ${leftBound}`;
+            }
+        }
+        
+        // Add final solution summary
+        if (solutionSteps.length > 0) {
+            steps += `<div class="step"><h4>Langkah Akhir: Ringkasan Penyelesaian</h4>`;
+            steps += `<p class="explanation">Berikut adalah langkah-langkah penyelesaian yang dapat ditulis:</p>`;
+            steps += `<div class="solution-summary">`;
+            solutionSteps.forEach((step, index) => {
+                steps += `<p class="math-expression">${index + 1}. \\(${step}\\)</p>`;
+            });
+            steps += `</div></div>`;
         }
         
         steps += `<div class="step"><p class="final-answer">Jawaban: \\(${result}\\)</p></div>`;
         
-        const leftBound = (a - c) / b;
-        const rightBound = (d - c) / b;
         representations = createDoubleRepresentation(leftBound, rightBound);
         
         return { problem, result, steps, representations };
     }
 
-    // Rational Inequality Solver
+    // Rational Inequality Solver (tetap sama)
     function solveRationalInequality() {
         const a = parseFloat(document.getElementById('rationalA').value) || 1;
         const b = document.getElementById('rationalB').value || 'x';
@@ -583,6 +706,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let steps = `<div class="step"><h4>Langkah 1: Tulis Pertidaksamaan Rasional</h4>`;
         steps += `<p class="math-expression">\\(${problem}\\)</p></div>`;
         
+        // Collect solution steps for final summary
+        let solutionSteps = [];
+        solutionSteps.push(`${problem}`);
+
         // Basic implementation for rational inequalities
         steps += `<div class="step"><h4>Langkah 2: Tentukan Domain</h4>`;
         steps += `<p class="explanation">Penyebut tidak boleh sama dengan nol</p>`;
@@ -624,6 +751,17 @@ document.addEventListener('DOMContentLoaded', function() {
             result = 'Solusi bergantung pada perbandingan kedua pecahan';
         }
         
+        // Add final solution summary
+        if (solutionSteps.length > 0) {
+            steps += `<div class="step"><h4>Langkah Akhir: Ringkasan Penyelesaian</h4>`;
+            steps += `<p class="explanation">Berikut adalah langkah-langkah penyelesaian yang dapat ditulis:</p>`;
+            steps += `<div class="solution-summary">`;
+            solutionSteps.forEach((step, index) => {
+                steps += `<p class="math-expression">${index + 1}. \\(${step}\\)</p>`;
+            });
+            steps += `</div></div>`;
+        }
+        
         steps += `<div class="step"><p class="final-answer">Jawaban: ${result}</p></div>`;
         
         let representations = `
@@ -637,18 +775,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return { problem, result, steps, representations };
     }
 
-    // Helper functions
-    function getInverseOperator(operator) {
-        switch(operator) {
-            case '<': return '>';
-            case '<=': return '>=';
-            case '>': return '<';
-            case '>=': return '<=';
-            default: return operator;
-        }
-    }
-
     function createLinearRepresentation(result, boundary) {
+        let numberLineHTML = '';
+        
+        if (result.includes('<') && !result.includes('>')) {
+            // x < boundary
+            numberLineHTML = createNumberLine(boundary, 'left', result.includes('≤') || result.includes('<='));
+        } else if (result.includes('>') && !result.includes('<')) {
+            // x > boundary
+            numberLineHTML = createNumberLine(boundary, 'right', result.includes('≥') || result.includes('>='));
+        } else if (result.includes('≤') || result.includes('<=')) {
+            // x ≤ boundary
+            numberLineHTML = createNumberLine(boundary, 'left', true);
+        } else if (result.includes('≥') || result.includes('>=')) {
+            // x ≥ boundary
+            numberLineHTML = createNumberLine(boundary, 'right', true);
+        }
+
         if (result.includes('<') && !result.includes('>')) {
             return `
                 <div class="representation-item">
@@ -657,7 +800,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="representation-item">
                     <h4>2. Notasi Interval:</h4>
-                    <p>\\(HP = (-\\infty, ${boundary})\\)</p>
+                    <p>\\(HP = (-\\infty, ${boundary})${result.includes('≤') || result.includes('<=') ? ']' : ''}\\)</p>
+                </div>
+                <div class="representation-item">
+                    <h4>3. Garis Bilangan:</h4>
+                    ${numberLineHTML}
                 </div>
             `;
         } else if (result.includes('>') && !result.includes('<')) {
@@ -670,6 +817,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h4>2. Notasi Interval:</h4>
                     <p>\\(HP = (${boundary}, \\infty)\\)</p>
                 </div>
+                <div class="representation-item">
+                    <h4>3. Garis Bilangan:</h4>
+                    ${numberLineHTML}
+                </div>
             `;
         } else if (result.includes('≤') || result.includes('<=')) {
             return `
@@ -680,6 +831,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="representation-item">
                     <h4>2. Notasi Interval:</h4>
                     <p>\\(HP = (-\\infty, ${boundary}]\\\\)</p>
+                </div>
+                <div class="representation-item">
+                    <h4>3. Garis Bilangan:</h4>
+                    ${numberLineHTML}
                 </div>
             `;
         } else if (result.includes('≥') || result.includes('>=')) {
@@ -692,12 +847,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h4>2. Notasi Interval:</h4>
                     <p>\\(HP = [${boundary}, \\infty)\\)</p>
                 </div>
+                <div class="representation-item">
+                    <h4>3. Garis Bilangan:</h4>
+                    ${numberLineHTML}
+                </div>
             `;
         }
         return '';
     }
 
     function createDoubleRepresentation(leftBound, rightBound) {
+        const numberLineHTML = createNumberLineRange(leftBound, rightBound);
+        
         return `
             <div class="representation-item">
                 <h4>1. Notasi Himpunan:</h4>
@@ -706,6 +867,56 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="representation-item">
                 <h4>2. Notasi Interval:</h4>
                 <p>\\(HP = (${leftBound}, ${rightBound})\\)</p>
+            </div>
+            <div class="representation-item">
+                <h4>3. Garis Bilangan:</h4>
+                ${numberLineHTML}
+            </div>
+        `;
+    }
+
+    function createNumberLine(boundary, direction, inclusive = false) {
+        const min = boundary - 5;
+        const max = boundary + 5;
+        const range = max - min;
+        
+        let pointStyle = inclusive ? 
+            'background: #4CAF50; border: 2px solid #4CAF50;' : 
+            'background: #4CAF50; border: 2px solid white;';
+        
+        let arrowStyle = direction === 'left' ? 
+            `left: 0; width: ${((boundary - min) / range) * 100}%;` : 
+            `left: ${((boundary - min) / range) * 100}%; width: ${((max - boundary) / range) * 100}%;`;
+
+        return `
+            <div class="number-line" style="position: relative; height: 50px; background: rgba(255,255,255,0.1); border-radius: 25px; margin: 10px 0;">
+                <div style="position: absolute; top: 20px; ${arrowStyle} height: 10px; background: #4CAF50; border-radius: 5px;"></div>
+                <div style="position: absolute; top: 15px; left: ${((boundary - min) / range) * 100}%; transform: translateX(-50%); width: 15px; height: 15px; border-radius: 50%; ${pointStyle}"></div>
+                <div style="position: absolute; top: 35px; left: ${((boundary - min) / range) * 100}%; transform: translateX(-50%); color: var(--light-orange); font-weight: bold;">${boundary}</div>
+                <div style="position: absolute; top: 35px; left: 0; transform: translateX(-50%); color: rgba(255,255,255,0.7);">${min}</div>
+                <div style="position: absolute; top: 35px; left: 100%; transform: translateX(-50%); color: rgba(255,255,255,0.7);">${max}</div>
+            </div>
+        `;
+    }
+
+    function createNumberLineRange(leftBound, rightBound) {
+        const min = Math.min(leftBound, rightBound) - 2;
+        const max = Math.max(leftBound, rightBound) + 2;
+        const range = max - min;
+        
+        const leftPos = ((leftBound - min) / range) * 100;
+        const rightPos = ((rightBound - min) / range) * 100;
+        const width = rightPos - leftPos;
+
+        return `
+            <div class="number-line" style="position: relative; height: 50px; background: rgba(255,255,255,0.1); border-radius: 25px; margin: 10px 0;">
+                <div style="position: absolute; top: 20px; left: ${leftPos}%; width: ${width}%; height: 10px; background: #4CAF50; border-radius: 5px;"></div>
+                <div style="position: absolute; top: 15px; left: ${leftPos}%; transform: translateX(-50%); width: 15px; height: 15px; border-radius: 50%; background: #4CAF50; border: 2px solid white;"></div>
+                <div style="position: absolute; top: 15px; left: ${rightPos}%; transform: translateX(-50%); width: 15px; height: 15px; border-radius: 50%; background: #4CAF50; border: 2px solid white;"></div>
+                <div style="position: absolute; top: 35px; left: ${leftPos}%; transform: translateX(-50%); color: var(--light-orange); font-weight: bold;">${leftBound}</div>
+                <div style="position: absolute; top: 35px; left: ${rightPos}%; transform: translateX(-50%); color: var(--light-orange); font-weight: bold;">${rightBound}</div>
+                <div style="position: absolute; top: 35px; left: 0; transform: translateX(-50%); color: rgba(255,255,255,0.7);">${min}</div>
+                <div style="position: absolute; top: 35px; left: 100%; transform: translateX(-50%); color: rgba(255,255,255,0.7);">${max}</div>
             </div>
         `;
     }
