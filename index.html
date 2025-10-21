@@ -3,87 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator Himpunan Matematika</title>
-    <link rel="stylesheet" href="item/style.css">
+    <title>Kalkulus Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Kalkulator Himpunan Matematika</h1>
-            <p class="subtitle">Operasi Irisan, Gabungan, dan Selang Himpunan</p>
-        </header>
-        
-        <div class="main-content">
-            <div class="input-section">
-                <div class="card">
-                    <h2 class="card-title">Definisi Himpunan</h2>
-                    <div class="set-input-container" id="setInputContainer">
-                        <div class="set-input">
-                            <label for="setA">Himpunan A</label>
-                            <input type="text" id="setA" placeholder="Contoh: -6 ≤ x ≤ -1" value="-6 ≤ x ≤ -1">
-                        </div>
-                        <div class="set-input">
-                            <label for="setB">Himpunan B</label>
-                            <input type="text" id="setB" placeholder="Contoh: -1 ≤ x ≤ 4" value="-1 ≤ x ≤ 4">
-                        </div>
-                    </div>
-                    <div class="btn-group">
-                        <button id="addSet" class="btn btn-primary">Tambah Himpunan</button>
-                        <button id="removeSet" class="btn btn-warning">Hapus Himpunan</button>
-                        <button id="resetSets" class="btn btn-danger">Reset Semua</button>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <h2 class="card-title">Kalkulator Himpunan</h2>
-                    <div class="expression-display" id="expressionDisplay">
-                        Ekspresi akan muncul di sini
-                    </div>
-                    <div class="calculator" id="calculator">
-                        <button data-set="A">A</button>
-                        <button data-set="B">B</button>
-                        
-                        <button class="operator" data-operator="(">(</button>
-                        <button class="operator" data-operator=")">)</button>
-                        <button class="operator" data-operator="∩">Irisan (∩)</button>
-                        <button class="operator" data-operator="∪">Gabungan (∪)</button>
-                        
-                        <button class="clear" id="clearBtn">Hapus</button>
-                        <button class="equals" id="solveBtn">Selesaikan</button>
-                    </div>
-                    
-                    <div class="example-problems">
-                        <h3>Contoh Soal:</h3>
-                        <button class="example-btn" data-expr="A∩B">A ∩ B</button>
-                        <button class="example-btn" data-expr="A∪B">A ∪ B</button>
-                        <button class="example-btn" data-expr="(A∩B)∪C">(A ∩ B) ∪ C</button>
-                        <button class="example-btn" data-expr="(A∪B)∪C">(A ∪ B) ∪ C</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="output-section">
-                <div class="card">
-                    <h2 class="card-title">Hasil dan Penyelesaian</h2>
-                    <div class="result-container">
-                        <h3>Hasil:</h3>
-                        <div class="result" id="result">
-                            Hasil akan muncul di sini
-                        </div>
-                    </div>
-                    
-                    <div class="solution-steps" id="solutionSteps">
-                        <!-- Langkah-langkah penyelesaian akan dimasukkan di sini -->
-                    </div>
-                    
-                    <div class="number-line-container" id="numberLineContainer">
-                        <!-- Garis bilangan akan dimasukkan di sini -->
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Background Elements -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
     </div>
 
-    <script src="item/script.js"></script>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-calculator"></i>
+                <span>MathHub</span>
+            </div>
+            <div class="nav-links">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#calculators" class="nav-link">Calculators</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-container">
+                <div class="hero-content" data-aos="fade-up">
+                    <div class="profile-image">
+                        <img src="https://avatars.githubusercontent.com/u/179840901?v=4" alt="Profile" id="github-avatar">
+                        <div class="image-glow"></div>
+                    </div>
+                    <h1 class="hero-title">
+                        Hi, I'm <span class="highlight">Kholikdev</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Welcome to kumpulan kalkulator kalkulus by kholikdev
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <div class="stat-number" id="calculator-count">2+</div>
+                            <div class="stat-label">Calculators</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number" id="project-count">3+</div>
+                            <div class="stat-label">Projects</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number" id="experience-count">6+</div>
+                            <div class="stat-label">weeks</div>
+                        </div>
+                    </div>
+                    <button class="cta-button" onclick="scrollToCalculators()">
+                        Explore Calculators
+                        <i class="fas fa-arrow-down"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calculators Section -->
+        <section id="calculators" class="calculators-section">
+            <div class="container">
+                <h2 class="section-title" data-aos="fade-up">My Calculators</h2>
+                <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                    Interactive tools to help you solve mathematical problems
+                </p>
+
+                <!-- Calculator Carousel -->
+                <div class="carousel-container" data-aos="fade-up" data-aos-delay="200">
+                    <div class="carousel-track" id="carouselTrack">
+                        <!-- Calculator items will be added dynamically -->
+                    </div>
+                    <div class="carousel-nav">
+                        <button class="carousel-btn prev" onclick="moveCarousel(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="carousel-btn next" onclick="moveCarousel(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Calculator Grid -->
+                <div class="calculators-grid" id="calculatorsGrid">
+                    <!-- Calculator cards will be added dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-text" data-aos="fade-right">
+                        <h2 class="section-title">About Me</h2>
+                        <p>
+                            Website ini diperuntukan merangkum dan memudahkan dalam belajar kalkulus dalam semester 1 dan seterusnya, belajar jadi menyenangkan selama berhubungan dengan pemrograman dan logika.
+                        </p>
+                        <div class="skills">
+                            <h3>Dibuat dengan:</h3>
+                            <div class="skill-tags">
+                                <span class="skill-tag">HTML5</span>
+                                <span class="skill-tag">CSS3</span>
+                                <span class="skill-tag">JavaScript</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="about-links" data-aos="fade-left">
+                        <a href="https://github.com/kholikdev" class="social-link" target="_blank">
+                            <i class="fab fa-github"></i>
+                            GitHub
+                        </a>
+                        <a href="flasgold3@gmail.com" class="social-link">
+                            <i class="fas fa-envelope"></i>
+                            Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Calculator kalkulus1 .kholik maulana.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

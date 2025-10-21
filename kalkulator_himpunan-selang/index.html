@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Himpunan Matematika</title>
+    <link rel="stylesheet" href="item/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Back Button -->
+        <div class="back-container">
+            <a href="../index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Kembali ke Halaman Utama
+            </a>
+        </div>
+
+        <header>
+            <h1>Kalkulator Himpunan Matematika</h1>
+            <p class="subtitle">Operasi Irisan, Gabungan, dan Selang Himpunan</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="card">
+                    <h2 class="card-title">Definisi Himpunan</h2>
+                    <div class="set-input-container" id="setInputContainer">
+                        <div class="set-input">
+                            <label for="setA">Himpunan A</label>
+                            <input type="text" id="setA" placeholder="Contoh: -6 ≤ x ≤ -1" value="-6 ≤ x ≤ -1">
+                        </div>
+                        <div class="set-input">
+                            <label for="setB">Himpunan B</label>
+                            <input type="text" id="setB" placeholder="Contoh: -1 ≤ x ≤ 4" value="-1 ≤ x ≤ 4">
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button id="addSet" class="btn btn-primary">Tambah Himpunan</button>
+                        <button id="removeSet" class="btn btn-warning">Hapus Himpunan</button>
+                        <button id="resetSets" class="btn btn-danger">Reset Semua</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="card-title">Kalkulator Himpunan</h2>
+                    <div class="expression-display" id="expressionDisplay">
+                        Ekspresi akan muncul di sini
+                    </div>
+                    <div class="calculator" id="calculator">
+                        <button data-set="A">A</button>
+                        <button data-set="B">B</button>
+                        
+                        <button class="operator" data-operator="(">(</button>
+                        <button class="operator" data-operator=")">)</button>
+                        <button class="operator" data-operator="∩">Irisan (∩)</button>
+                        <button class="operator" data-operator="∪">Gabungan (∪)</button>
+                        
+                        <button class="clear" id="clearBtn">Hapus</button>
+                        <button class="equals" id="solveBtn">Selesaikan</button>
+                    </div>
+                    
+                    <div class="example-problems">
+                        <h3>Contoh Soal:</h3>
+                        <button class="example-btn" data-expr="A∩B">A ∩ B</button>
+                        <button class="example-btn" data-expr="A∪B">A ∪ B</button>
+                        <button class="example-btn" data-expr="(A∩B)∪C">(A ∩ B) ∪ C</button>
+                        <button class="example-btn" data-expr="(A∪B)∪C">(A ∪ B) ∪ C</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <div class="card">
+                    <h2 class="card-title">Hasil dan Penyelesaian</h2>
+                    <div class="result-container">
+                        <h3>Hasil:</h3>
+                        <div class="result" id="result">
+                            Hasil akan muncul di sini
+                        </div>
+                    </div>
+                    
+                    <div class="solution-steps" id="solutionSteps">
+                        <!-- Langkah-langkah penyelesaian akan dimasukkan di sini -->
+                    </div>
+                    
+                    <div class="number-line-container" id="numberLineContainer">
+                        <!-- Garis bilangan akan dimasukkan di sini -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="item/script.js"></script>
+</body>
+</html>
