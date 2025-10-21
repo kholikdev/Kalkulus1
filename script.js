@@ -54,6 +54,12 @@ let currentCarouselIndex = 0;
 const carouselTrack = document.getElementById('carouselTrack');
 const calculatorsGrid = document.getElementById('calculatorsGrid');
 
+// Touch/Swipe variables
+let startX = 0;
+let currentX = 0;
+let isDragging = false;
+let dragThreshold = 50; // Minimum drag distance to trigger slide
+
 // Initialize Page
 document.addEventListener('DOMContentLoaded', function() {
     initializeCarousel();
@@ -61,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadGitHubProfile();
     setupNavigation();
     setupScrollEffects();
+    setupTouchSwipe();
 });
 
 // Initialize Carousel
@@ -87,6 +94,87 @@ function initializeCarousel() {
     });
     
     updateCarousel();
+}
+
+// Setup Touch/Swipe functionality
+function setupTouchSwipe() {
+    const carouselContainer = document.querySelector('.carousel-container');
+    
+    // Mouse events for desktop
+    carouselContainer.addEventListener('mousedown', handleDragStart);
+    carouselContainer.addEventListener('mousemove', handleDragMove);
+    carouselContainer.addEventListener('mouseup', handleDragEnd);
+    carouselContainer.addEventListener('mouseleave', handleDragEnd);
+    
+    // Touch events for mobile
+    carouselContainer.addEventListener('touchstart', handleDragStart);
+    carouselContainer.addEventListener('touchmove', handleDragMove);
+    carouselContainer.addEventListener('touchend', handleDragEnd);
+    
+    // Prevent image drag behavior
+    carouselContainer.addEventListener('dragstart', (e) => e.preventDefault());
+}
+
+function handleDragStart(e) {
+    if (e.type === 'touchstart') {
+        startX = e.touches[0].clientX;
+    } else {
+        startX = e.clientX;
+        e.preventDefault();
+    }
+    
+    isDragging = true;
+    carouselTrack.style.transition = 'none';
+    carouselTrack.style.cursor = 'grabbing';
+}
+
+function handleDragMove(e) {
+    if (!isDragging) return;
+    
+    if (e.type === 'touchmove') {
+        currentX = e.touches[0].clientX;
+    } else {
+        currentX = e.clientX;
+    }
+    
+    const diff = currentX - startX;
+    
+    // Apply drag transformation
+    const items = document.querySelectorAll('.calculator-item');
+    const itemWidth = items[0].offsetWidth + 32;
+    const trackWidth = carouselTrack.scrollWidth;
+    const containerWidth = carouselTrack.parentElement.offsetWidth;
+    const maxTransform = trackWidth - containerWidth;
+    
+    let baseTransform = -currentCarouselIndex * itemWidth;
+    baseTransform += (containerWidth - itemWidth) / 2;
+    baseTransform = Math.max(Math.min(0, baseTransform), -maxTransform);
+    
+    carouselTrack.style.transform = `translateX(${baseTransform + diff}px)`;
+}
+
+function handleDragEnd(e) {
+    if (!isDragging) return;
+    
+    isDragging = false;
+    carouselTrack.style.transition = 'transform 0.5s ease';
+    carouselTrack.style.cursor = 'grab';
+    
+    const diff = currentX - startX;
+    
+    // Determine if swipe should trigger slide change
+    if (Math.abs(diff) > dragThreshold) {
+        if (diff > 0) {
+            // Swipe right - go to previous
+            moveCarousel(-1);
+        } else {
+            // Swipe left - go to next
+            moveCarousel(1);
+        }
+    } else {
+        // Not enough drag, return to current position
+        updateCarousel();
+    }
 }
 
 // Move Carousel
@@ -150,16 +238,15 @@ function initializeCalculatorGrid() {
     });
 }
 
-// Load GitHub Profile (Placeholder - replace with actual GitHub API)
+// Load GitHub Profile
 function loadGitHubProfile() {
-    // In a real implementation, you would fetch from GitHub API
+    // Profile image already set in HTML
     const avatar = document.getElementById('github-avatar');
-    // avatar.src = 'https://avatars.githubusercontent.com/u/yourusername';
     
     // Simulate loading stats
-    animateCounter('calculator-count', 0, calculators.length, 2000);
-    animateCounter('project-count', 0, 12, 2000);
-    animateCounter('experience-count', 0, 3, 2000);
+    animateCounter('calculator-count', 0, 2, 1500);
+    animateCounter('project-count', 0, 3, 1500);
+    animateCounter('experience-count', 0, 6, 1500);
 }
 
 // Animate Counter
@@ -257,9 +344,27 @@ function scrollToCalculators() {
 }
 
 // Auto-rotate carousel
-setInterval(() => {
+let autoRotateInterval = setInterval(() => {
     moveCarousel(1);
 }, 5000);
+
+// Pause auto-rotate when user interacts with carousel
+function pauseAutoRotate() {
+    clearInterval(autoRotateInterval);
+}
+
+function resumeAutoRotate() {
+    clearInterval(autoRotateInterval);
+    autoRotateInterval = setInterval(() => {
+        moveCarousel(1);
+    }, 5000);
+}
+
+// Add event listeners to pause/resume auto-rotate
+document.querySelector('.carousel-container').addEventListener('mouseenter', pauseAutoRotate);
+document.querySelector('.carousel-container').addEventListener('mouseleave', resumeAutoRotate);
+document.querySelector('.carousel-container').addEventListener('touchstart', pauseAutoRotate);
+document.querySelector('.carousel-container').addEventListener('touchend', resumeAutoRotate);
 
 // Handle window resize
 window.addEventListener('resize', updateCarousel);
