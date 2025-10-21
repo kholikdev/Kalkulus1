@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Himpunan Matematika</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 10px;
+        }
+        
+        .set-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .set-input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .set-input label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .set-input input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .calculator {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .calculator button {
+            padding: 15px;
+            font-size: 1.2rem;
+            background-color: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .calculator button:hover {
+            background-color: #d5dbdb;
+        }
+        
+        .calculator button.operator {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .calculator button.operator:hover {
+            background-color: #2980b9;
+        }
+        
+        .calculator button.equals {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .calculator button.equals:hover {
+            background-color: #27ae60;
+        }
+        
+        .calculator button.clear {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .calculator button.clear:hover {
+            background-color: #c0392b;
+        }
+        
+        .expression-display {
+            background-color: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-container {
+            margin-top: 20px;
+        }
+        
+        .result {
+            background-color: var(--light);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .solution-steps {
+            margin-top: 20px;
+        }
+        
+        .step {
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .step h4 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .step p {
+            margin-bottom: 8px;
+        }
+        
+        .step .formula {
+            font-family: 'Cambria Math', serif;
+            font-size: 1.1rem;
+            margin: 10px 0;
+            padding: 8px 15px;
+            background-color: #e8f4fc;
+            border-radius: 5px;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .step .explanation {
+            font-style: italic;
+            color: #555;
+            margin: 8px 0;
+        }
+        
+        .step .final-answer {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f8f0;
+            border-radius: 5px;
+            border-left: 3px solid var(--secondary);
+        }
+        
+        .number-line {
+            margin: 20px 0;
+            position: relative;
+            height: 80px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+        
+        .number-line-inner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 4px;
+            background-color: var(--dark);
+        }
+        
+        .number-line-markers {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .number-line-marker {
+            position: relative;
+            width: 2px;
+            height: 10px;
+            background-color: var(--dark);
+            top: -3px;
+        }
+        
+        .number-line-label {
+            position: absolute;
+            top: 15px;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+        }
+        
+        .set-interval {
+            position: absolute;
+            height: 20px;
+            border-radius: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .set-label {
+            position: absolute;
+            top: -25px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .operation-result {
+            height: 30px;
+            border-radius: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            position: absolute;
+        }
+        
+        .example-problems {
+            margin-top: 30px;
+        }
+        
+        .example-btn {
+            margin: 5px;
+            padding: 8px 12px;
+            background-color: var(--warning);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .example-btn:hover {
+            background-color: #e67e22;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Kalkulator Himpunan Matematika</h1>
+            <p class="subtitle">Operasi Irisan, Gabungan, dan Selang Himpunan</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <div class="card">
+                    <h2 class="card-title">Definisi Himpunan</h2>
+                    <div class="set-input-container">
+                        <div class="set-input">
+                            <label for="setA">Himpunan A</label>
+                            <input type="text" id="setA" placeholder="Contoh: -6 ≤ x ≤ -1" value="-6 ≤ x ≤ -1">
+                        </div>
+                        <div class="set-input">
+                            <label for="setB">Himpunan B</label>
+                            <input type="text" id="setB" placeholder="Contoh: -1 ≤ x ≤ 4" value="-1 ≤ x ≤ 4">
+                        </div>
+                        <div class="set-input">
+                            <label for="setC">Himpunan C</label>
+                            <input type="text" id="setC" placeholder="Contoh: -1 ≤ x ≤ 6" value="-1 ≤ x ≤ 6">
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button id="addSet" class="btn btn-primary">Tambah Himpunan</button>
+                        <button id="resetSets" class="btn btn-danger">Reset Himpunan</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="card-title">Kalkulator Himpunan</h2>
+                    <div class="expression-display" id="expressionDisplay">
+                        Ekspresi akan muncul di sini
+                    </div>
+                    <div class="calculator">
+                        <button data-set="A">A</button>
+                        <button data-set="B">B</button>
+                        <button data-set="C">C</button>
+                        <button data-set="D">D</button>
+                        
+                        <button class="operator" data-operator="(">(</button>
+                        <button class="operator" data-operator=")">)</button>
+                        <button class="operator" data-operator="∩">Irisan (∩)</button>
+                        <button class="operator" data-operator="∪">Gabungan (∪)</button>
+                        
+                        <button class="clear" id="clearBtn">Hapus</button>
+                        <button class="equals" id="solveBtn">Selesaikan</button>
+                    </div>
+                    
+                    <div class="example-problems">
+                        <h3>Contoh Soal:</h3>
+                        <button class="example-btn" data-expr="A∩B">A ∩ B</button>
+                        <button class="example-btn" data-expr="(A∩B)∪C">(A ∩ B) ∪ C</button>
+                        <button class="example-btn" data-expr="(A∪B)∪C">(A ∪ B) ∪ C</button>
+                        <button class="example-btn" data-expr="(A∩B)∩C">(A ∩ B) ∩ C</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <div class="card">
+                    <h2 class="card-title">Hasil dan Penyelesaian</h2>
+                    <div class="result-container">
+                        <h3>Hasil:</h3>
+                        <div class="result" id="result">
+                            Hasil akan muncul di sini
+                        </div>
+                    </div>
+                    
+                    <div class="solution-steps" id="solutionSteps">
+                        <!-- Langkah-langkah penyelesaian akan dimasukkan di sini -->
+                    </div>
+                    
+                    <div class="number-line-container" id="numberLineContainer">
+                        <!-- Garis bilangan akan dimasukkan di sini -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elemen DOM
+            const setAInput = document.getElementById('setA');
+            const setBInput = document.getElementById('setB');
+            const setCInput = document.getElementById('setC');
+            const addSetBtn = document.getElementById('addSet');
+            const resetSetsBtn = document.getElementById('resetSets');
+            const expressionDisplay = document.getElementById('expressionDisplay');
+            const clearBtn = document.getElementById('clearBtn');
+            const solveBtn = document.getElementById('solveBtn');
+            const resultDisplay = document.getElementById('result');
+            const solutionSteps = document.getElementById('solutionSteps');
+            const numberLineContainer = document.getElementById('numberLineContainer');
+            
+            // State aplikasi
+            let currentExpression = '';
+            let sets = {
+                'A': { min: -6, max: -1 },
+                'B': { min: -1, max: 4 },
+                'C': { min: -1, max: 6 }
+            };
+            let nextSetLetter = 'D';
+            
+            // Fungsi untuk memperbarui set dari input
+            function updateSets() {
+                try {
+                    sets.A = parseSetInput(setAInput.value);
+                    sets.B = parseSetInput(setBInput.value);
+                    sets.C = parseSetInput(setCInput.value);
+                    
+                    // Update himpunan tambahan
+                    for (const setName in sets) {
+                        if (setName >= 'D') {
+                            const inputElement = document.getElementById(`set${setName}`);
+                            if (inputElement) {
+                                sets[setName] = parseSetInput(inputElement.value);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    alert('Format himpunan tidak valid: ' + error.message);
+                }
+            }
+            
+            // Fungsi untuk mem-parsing input himpunan
+            function parseSetInput(input) {
+                // Menghapus spasi berlebih
+                input = input.replace(/\s+/g, ' ');
+                
+                // Mencocokkan pola seperti "a ≤ x ≤ b" atau "a <= x <= b"
+                const pattern = /(-?\d+(?:\.\d+)?)\s*(≤|<=)\s*x\s*(≤|<=)\s*(-?\d+(?:\.\d+)?)/;
+                const match = input.match(pattern);
+                
+                if (match) {
+                    const min = parseFloat(match[1]);
+                    const max = parseFloat(match[4]);
+                    
+                    if (min <= max) {
+                        return { min, max };
+                    } else {
+                        throw new Error('Nilai minimum harus lebih kecil atau sama dengan nilai maksimum');
+                    }
+                } else {
+                    throw new Error('Format tidak dikenali. Gunakan format seperti: -6 ≤ x ≤ -1');
+                }
+            }
+            
+            // Fungsi untuk menambah himpunan baru
+            addSetBtn.addEventListener('click', function() {
+                if (nextSetLetter > 'Z') {
+                    alert('Tidak dapat menambah himpunan lebih dari 26');
+                    return;
+                }
+                
+                const setInputContainer = document.querySelector('.set-input-container');
+                const newSetInput = document.createElement('div');
+                newSetInput.className = 'set-input';
+                newSetInput.innerHTML = `
+                    <label for="set${nextSetLetter}">Himpunan ${nextSetLetter}</label>
+                    <input type="text" id="set${nextSetLetter}" placeholder="Contoh: 0 ≤ x ≤ 5" value="0 ≤ x ≤ 5">
+                `;
+                setInputContainer.appendChild(newSetInput);
+                
+                // Tambah tombol untuk himpunan baru di kalkulator
+                const calculator = document.querySelector('.calculator');
+                const firstRow = calculator.querySelectorAll('button')[3]; // Tombol D
+                const newSetButton = document.createElement('button');
+                newSetButton.textContent = nextSetLetter;
+                newSetButton.setAttribute('data-set', nextSetLetter);
+                calculator.insertBefore(newSetButton, firstRow);
+                
+                // Inisialisasi himpunan baru
+                sets[nextSetLetter] = { min: 0, max: 5 };
+                
+                // Pindah ke huruf berikutnya
+                nextSetLetter = String.fromCharCode(nextSetLetter.charCodeAt(0) + 1);
+            });
+            
+            // Fungsi untuk mereset himpunan
+            resetSetsBtn.addEventListener('click', function() {
+                setAInput.value = '-6 ≤ x ≤ -1';
+                setBInput.value = '-1 ≤ x ≤ 4';
+                setCInput.value = '-1 ≤ x ≤ 6';
+                
+                // Hapus himpunan tambahan
+                const setInputs = document.querySelectorAll('.set-input');
+                for (let i = 3; i < setInputs.length; i++) {
+                    setInputs[i].remove();
+                }
+                
+                // Reset kalkulator
+                const calculatorButtons = document.querySelectorAll('.calculator button[data-set]');
+                calculatorButtons.forEach(button => {
+                    const setLetter = button.getAttribute('data-set');
+                    if (setLetter > 'C') {
+                        button.remove();
+                    }
+                });
+                
+                // Reset state
+                sets = {
+                    'A': { min: -6, max: -1 },
+                    'B': { min: -1, max: 4 },
+                    'C': { min: -1, max: 6 }
+                };
+                nextSetLetter = 'D';
+                currentExpression = '';
+                expressionDisplay.textContent = 'Ekspresi akan muncul di sini';
+                resultDisplay.textContent = 'Hasil akan muncul di sini';
+                solutionSteps.innerHTML = '';
+                numberLineContainer.innerHTML = '';
+            });
+            
+            // Fungsi untuk menangani klik tombol kalkulator
+            document.querySelectorAll('.calculator button').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.getAttribute('data-set')) {
+                        currentExpression += this.getAttribute('data-set');
+                    } else if (this.getAttribute('data-operator')) {
+                        currentExpression += this.getAttribute('data-operator');
+                    }
+                    
+                    expressionDisplay.textContent = currentExpression || 'Ekspresi akan muncul di sini';
+                });
+            });
+            
+            // Fungsi untuk contoh soal
+            document.querySelectorAll('.example-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    currentExpression = this.getAttribute('data-expr');
+                    expressionDisplay.textContent = currentExpression;
+                });
+            });
+            
+            // Fungsi untuk menghapus ekspresi
+            clearBtn.addEventListener('click', function() {
+                currentExpression = '';
+                expressionDisplay.textContent = 'Ekspresi akan muncul di sini';
+                resultDisplay.textContent = 'Hasil akan muncul di sini';
+                solutionSteps.innerHTML = '';
+                numberLineContainer.innerHTML = '';
+            });
+            
+            // Fungsi untuk menyelesaikan ekspresi
+            solveBtn.addEventListener('click', function() {
+                updateSets();
+                
+                if (!currentExpression) {
+                    alert('Masukkan ekspresi himpunan terlebih dahulu');
+                    return;
+                }
+                
+                try {
+                    const result = evaluateSetExpression(currentExpression, sets);
+                    displayResult(result, currentExpression);
+                } catch (error) {
+                    alert('Error dalam mengevaluasi ekspresi: ' + error.message);
+                }
+            });
+            
+            // Fungsi untuk mengevaluasi ekspresi himpunan
+            function evaluateSetExpression(expression, sets) {
+                // Validasi ekspresi
+                if (!isValidExpression(expression)) {
+                    throw new Error('Ekspresi tidak valid');
+                }
+                
+                // Evaluasi ekspresi menggunakan pendekatan rekursif
+                return evaluate(expression, sets);
+            }
+            
+            // Fungsi untuk memvalidasi ekspresi
+            function isValidExpression(expr) {
+                // Periksa keseimbangan kurung
+                let balance = 0;
+                for (let char of expr) {
+                    if (char === '(') balance++;
+                    if (char === ')') balance--;
+                    if (balance < 0) return false;
+                }
+                if (balance !== 0) return false;
+                
+                // Periksa karakter yang valid
+                const validChars = /^[A-Z∩∪()\s]+$/;
+                return validChars.test(expr.replace(/\s/g, ''));
+            }
+            
+            // Fungsi evaluasi rekursif
+            function evaluate(expr, sets) {
+                // Hapus spasi
+                expr = expr.replace(/\s/g, '');
+                
+                // Jika ekspresi hanya satu himpunan
+                if (expr.length === 1 && /[A-Z]/.test(expr)) {
+                    return sets[expr];
+                }
+                
+                // Cari operator dengan prioritas terendah (di luar kurung)
+                let depth = 0;
+                let minPriority = Infinity;
+                let minPriorityIndex = -1;
+                let minPriorityOp = '';
+                
+                for (let i = 0; i < expr.length; i++) {
+                    const char = expr[i];
+                    
+                    if (char === '(') depth++;
+                    if (char === ')') depth--;
+                    
+                    if (depth === 0) {
+                        if (char === '∪' || char === '∩') {
+                            const priority = (char === '∪') ? 1 : 2;
+                            if (priority < minPriority) {
+                                minPriority = priority;
+                                minPriorityIndex = i;
+                                minPriorityOp = char;
+                            }
+                        }
+                    }
+                }
+                
+                // Jika ditemukan operator dengan prioritas terendah
+                if (minPriorityIndex !== -1) {
+                    const leftExpr = expr.substring(0, minPriorityIndex);
+                    const rightExpr = expr.substring(minPriorityIndex + 1);
+                    
+                    const leftSet = evaluate(leftExpr, sets);
+                    const rightSet = evaluate(rightExpr, sets);
+                    
+                    if (minPriorityOp === '∩') {
+                        return setIntersection(leftSet, rightSet);
+                    } else if (minPriorityOp === '∪') {
+                        return setUnion(leftSet, rightSet);
+                    }
+                }
+                
+                // Jika ekspresi diawali dan diakhiri dengan kurung
+                if (expr[0] === '(' && expr[expr.length - 1] === ')') {
+                    return evaluate(expr.substring(1, expr.length - 1), sets);
+                }
+                
+                throw new Error('Ekspresi tidak valid: ' + expr);
+            }
+            
+            // Fungsi untuk irisan himpunan
+            function setIntersection(set1, set2) {
+                const min = Math.max(set1.min, set2.min);
+                const max = Math.min(set1.max, set2.max);
+                
+                if (min <= max) {
+                    return { min, max };
+                } else {
+                    return { min: NaN, max: NaN }; // Himpunan kosong
+                }
+            }
+            
+            // Fungsi untuk gabungan himpunan
+            function setUnion(set1, set2) {
+                // Periksa apakah himpunan saling tumpang tindih atau bersebelahan
+                if (set1.max >= set2.min - 0.1 && set2.max >= set1.min - 0.1) {
+                    return {
+                        min: Math.min(set1.min, set2.min),
+                        max: Math.max(set1.max, set2.max)
+                    };
+                } else {
+                    // Untuk kasus himpunan terpisah, kita kembalikan array himpunan
+                    return {
+                        sets: [set1, set2],
+                        isUnionOfDisjointSets: true
+                    };
+                }
+            }
+            
+            // Fungsi untuk menampilkan hasil
+            function displayResult(result, expression) {
+                let resultText = '';
+                let stepsHTML = '';
+                
+                // Langkah 1: Tampilkan semua himpunan yang didefinisikan
+                stepsHTML += `<div class="step">
+                    <h4>Langkah 1: Menentukan Semua Himpunan</h4>`;
+                
+                for (const [setName, setValue] of Object.entries(sets)) {
+                    stepsHTML += `<p>${setName} = { x | ${setValue.min} ≤ x ≤ ${setValue.max} }</p>`;
+                }
+                
+                stepsHTML += `<p class="explanation">Kita telah mendefinisikan semua himpunan yang akan digunakan dalam perhitungan.</p>`;
+                stepsHTML += `</div>`;
+                
+                // Langkah 2: Evaluasi ekspresi langkah demi langkah
+                stepsHTML += `<div class="step">
+                    <h4>Langkah 2: Mengevaluasi Ekspresi "${expression}"</h4>`;
+                
+                // Tampilkan ekspresi awal
+                stepsHTML += `<p class="formula">Ekspresi: ${expression}</p>`;
+                
+                // Evaluasi langkah demi langkah
+                const steps = evaluateStepByStep(expression, sets);
+                stepsHTML += steps;
+                
+                // Tampilkan hasil
+                if (result.isUnionOfDisjointSets) {
+                    resultText = `Gabungan dari himpunan terpisah: `;
+                    result.sets.forEach((set, index) => {
+                        resultText += `{ x | ${set.min} ≤ x ≤ ${set.max} }`;
+                        if (index < result.sets.length - 1) {
+                            resultText += ' ∪ ';
+                        }
+                    });
+                    
+                    stepsHTML += `<p class="final-answer">Jawaban: ${resultText}</p>`;
+                } else if (isNaN(result.min) || isNaN(result.max)) {
+                    resultText = 'Himpunan kosong (∅)';
+                    stepsHTML += `<p class="final-answer">Jawaban: ${resultText}</p>`;
+                } else {
+                    resultText = `{ x | ${result.min} ≤ x ≤ ${result.max} }`;
+                    stepsHTML += `<p class="final-answer">Jawaban: ${resultText}</p>`;
+                }
+                
+                stepsHTML += `</div>`;
+                
+                // Tampilkan hasil
+                resultDisplay.textContent = resultText;
+                solutionSteps.innerHTML = stepsHTML;
+                
+                // Gambar garis bilangan
+                drawNumberLine(result, expression);
+            }
+            
+            // Fungsi untuk evaluasi langkah demi langkah
+            function evaluateStepByStep(expression, sets) {
+                let stepsHTML = '';
+                let currentExpr = expression;
+                
+                // Evaluasi semua operasi dalam kurung terlebih dahulu
+                while (currentExpr.includes('(')) {
+                    const openParen = currentExpr.lastIndexOf('(');
+                    const closeParen = currentExpr.indexOf(')', openParen);
+                    
+                    if (closeParen === -1) {
+                        throw new Error('Kurung tidak seimbang');
+                    }
+                    
+                    const subExpr = currentExpr.substring(openParen + 1, closeParen);
+                    const subResult = evaluate(subExpr, sets);
+                    
+                    let subResultText;
+                    if (subResult.isUnionOfDisjointSets) {
+                        subResultText = `(${subResult.sets.map(s => `{${s.min}..${s.max}}`).join(' ∪ ')})`;
+                    } else if (isNaN(subResult.min) || isNaN(subResult.max)) {
+                        subResultText = '∅';
+                    } else {
+                        subResultText = `{${subResult.min}..${subResult.max}}`;
+                    }
+                    
+                    stepsHTML += `<p class="explanation">Mengevaluasi ekspresi dalam kurung: ${subExpr}</p>`;
+                    stepsHTML += `<p class="formula">${subExpr} = ${subResultText}</p>`;
+                    
+                    currentExpr = currentExpr.substring(0, openParen) + subResultText + currentExpr.substring(closeParen + 1);
+                }
+                
+                // Evaluasi operasi irisan dan gabungan
+                while (currentExpr.includes('∩') || currentExpr.includes('∪')) {
+                    // Cari operasi pertama
+                    const unionIndex = currentExpr.indexOf('∪');
+                    const intersectionIndex = currentExpr.indexOf('∩');
+                    
+                    let opIndex, operator;
+                    if (unionIndex !== -1 && intersectionIndex !== -1) {
+                        if (unionIndex < intersectionIndex) {
+                            opIndex = unionIndex;
+                            operator = '∪';
+                        } else {
+                            opIndex = intersectionIndex;
+                            operator = '∩';
+                        }
+                    } else if (unionIndex !== -1) {
+                        opIndex = unionIndex;
+                        operator = '∪';
+                    } else {
+                        opIndex = intersectionIndex;
+                        operator = '∩';
+                    }
+                    
+                    // Temukan operand kiri dan kanan
+                    const leftPart = currentExpr.substring(0, opIndex);
+                    const rightPart = currentExpr.substring(opIndex + 1);
+                    
+                    // Ekstrak operand kiri (dari kanan ke kiri)
+                    let leftOperand = '';
+                    for (let i = leftPart.length - 1; i >= 0; i--) {
+                        if (leftPart[i] === '}' || leftPart[i] === '∅' || (leftPart[i] >= 'A' && leftPart[i] <= 'Z')) {
+                            leftOperand = leftPart[i] + leftOperand;
+                            if (leftPart[i] === '{') break;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    // Ekstrak operand kanan (dari kiri ke kanan)
+                    let rightOperand = '';
+                    for (let i = 0; i < rightPart.length; i++) {
+                        if (rightPart[i] === '{' || rightPart[i] === '∅' || (rightPart[i] >= 'A' && rightPart[i] <= 'Z')) {
+                            rightOperand += rightPart[i];
+                            if (rightPart[i] === '}') break;
+                        } else {
+                            break;
+                        }
+                    }
+                    
+                    // Parse operand
+                    let leftSet, rightSet;
+                    
+                    if (leftOperand === '∅') {
+                        leftSet = { min: NaN, max: NaN };
+                    } else if (leftOperand.includes('{')) {
+                        const match = leftOperand.match(/\{(-?\d+(?:\.\d+)?)\.\.(-?\d+(?:\.\d+)?)\}/);
+                        if (match) {
+                            leftSet = { min: parseFloat(match[1]), max: parseFloat(match[2]) };
+                        } else {
+                            leftSet = sets[leftOperand];
+                        }
+                    } else {
+                        leftSet = sets[leftOperand];
+                    }
+                    
+                    if (rightOperand === '∅') {
+                        rightSet = { min: NaN, max: NaN };
+                    } else if (rightOperand.includes('{')) {
+                        const match = rightOperand.match(/\{(-?\d+(?:\.\d+)?)\.\.(-?\d+(?:\.\d+)?)\}/);
+                        if (match) {
+                            rightSet = { min: parseFloat(match[1]), max: parseFloat(match[2]) };
+                        } else {
+                            rightSet = sets[rightOperand];
+                        }
+                    } else {
+                        rightSet = sets[rightOperand];
+                    }
+                    
+                    // Lakukan operasi
+                    let result;
+                    let operationText;
+                    
+                    if (operator === '∩') {
+                        result = setIntersection(leftSet, rightSet);
+                        operationText = "irisan";
+                    } else {
+                        result = setUnion(leftSet, rightSet);
+                        operationText = "gabungan";
+                    }
+                    
+                    // Format hasil
+                    let resultText;
+                    if (result.isUnionOfDisjointSets) {
+                        resultText = `(${result.sets.map(s => `{${s.min}..${s.max}}`).join(' ∪ ')})`;
+                    } else if (isNaN(result.min) || isNaN(result.max)) {
+                        resultText = '∅';
+                    } else {
+                        resultText = `{${result.min}..${result.max}}`;
+                    }
+                    
+                    // Tampilkan langkah
+                    stepsHTML += `<p class="explanation">Melakukan operasi ${operationText} antara ${leftOperand} dan ${rightOperand}</p>`;
+                    
+                    if (operator === '∩') {
+                        stepsHTML += `<p class="formula">${leftOperand} ∩ ${rightOperand} = { x | max(${leftSet.min}, ${rightSet.min}) ≤ x ≤ min(${leftSet.max}, ${rightSet.max}) }</p>`;
+                        stepsHTML += `<p class="formula">${leftOperand} ∩ ${rightOperand} = { x | ${Math.max(leftSet.min, rightSet.min)} ≤ x ≤ ${Math.min(leftSet.max, rightSet.max)} }</p>`;
+                    } else {
+                        stepsHTML += `<p class="formula">${leftOperand} ∪ ${rightOperand} = { x | min(${leftSet.min}, ${rightSet.min}) ≤ x ≤ max(${leftSet.max}, ${rightSet.max}) }</p>`;
+                        stepsHTML += `<p class="formula">${leftOperand} ∪ ${rightOperand} = { x | ${Math.min(leftSet.min, rightSet.min)} ≤ x ≤ ${Math.max(leftSet.max, rightSet.max)} }</p>`;
+                    }
+                    
+                    stepsHTML += `<p class="formula">${leftOperand} ${operator} ${rightOperand} = ${resultText}</p>`;
+                    
+                    // Ganti ekspresi dengan hasil
+                    currentExpr = currentExpr.replace(
+                        `${leftOperand}${operator}${rightOperand}`, 
+                        resultText
+                    );
+                }
+                
+                return stepsHTML;
+            }
+            
+            // Fungsi untuk menggambar garis bilangan
+            function drawNumberLine(result, expression) {
+                // Tentukan rentang untuk garis bilangan
+                let allMins = [];
+                let allMaxs = [];
+                
+                for (const set of Object.values(sets)) {
+                    allMins.push(set.min);
+                    allMaxs.push(set.max);
+                }
+                
+                if (!result.isUnionOfDisjointSets && !isNaN(result.min) && !isNaN(result.max)) {
+                    allMins.push(result.min);
+                    allMaxs.push(result.max);
+                } else if (result.isUnionOfDisjointSets) {
+                    result.sets.forEach(set => {
+                        allMins.push(set.min);
+                        allMaxs.push(set.max);
+                    });
+                }
+                
+                const minVal = Math.min(...allMins) - 1;
+                const maxVal = Math.max(...allMaxs) + 1;
+                
+                // Buat elemen garis bilangan
+                numberLineContainer.innerHTML = `
+                    <h3>Visualisasi pada Garis Bilangan</h3>
+                    <div class="number-line">
+                        <div class="number-line-inner"></div>
+                        <div class="number-line-markers" id="numberLineMarkers"></div>
+                    </div>
+                `;
+                
+                const numberLineMarkers = document.getElementById('numberLineMarkers');
+                
+                // Tambahkan marker dan label
+                for (let i = minVal; i <= maxVal; i++) {
+                    const marker = document.createElement('div');
+                    marker.className = 'number-line-marker';
+                    marker.style.left = `${((i - minVal) / (maxVal - minVal)) * 100}%`;
+                    
+                    const label = document.createElement('div');
+                    label.className = 'number-line-label';
+                    label.textContent = i;
+                    label.style.left = `${((i - minVal) / (maxVal - minVal)) * 100}%`;
+                    
+                    numberLineMarkers.appendChild(marker);
+                    numberLineMarkers.appendChild(label);
+                }
+                
+                // Gambar himpunan asli
+                let colorIndex = 0;
+                const colors = [
+                    'rgba(52, 152, 219, 0.5)',
+                    'rgba(155, 89, 182, 0.5)',
+                    'rgba(241, 196, 15, 0.5)',
+                    'rgba(230, 126, 34, 0.5)'
+                ];
+                
+                for (const [setName, setValue] of Object.entries(sets)) {
+                    if (expression.includes(setName)) {
+                        const setInterval = document.createElement('div');
+                        setInterval.className = 'set-interval';
+                        setInterval.style.backgroundColor = colors[colorIndex % colors.length];
+                        setInterval.style.left = `${((setValue.min - minVal) / (maxVal - minVal)) * 100}%`;
+                        setInterval.style.width = `${((setValue.max - setValue.min) / (maxVal - minVal)) * 100}%`;
+                        
+                        const setLabel = document.createElement('div');
+                        setLabel.className = 'set-label';
+                        setLabel.textContent = setName;
+                        setLabel.style.left = `${((setValue.min + (setValue.max - setValue.min) / 2 - minVal) / (maxVal - minVal)) * 100}%`;
+                        setLabel.style.color = colors[colorIndex % colors.length];
+                        
+                        numberLineMarkers.appendChild(setInterval);
+                        numberLineMarkers.appendChild(setLabel);
+                        
+                        colorIndex++;
+                    }
+                }
+                
+                // Gambar hasil
+                if (result.isUnionOfDisjointSets) {
+                    result.sets.forEach(set => {
+                        const resultInterval = document.createElement('div');
+                        resultInterval.className = 'operation-result';
+                        resultInterval.style.backgroundColor = 'rgba(46, 204, 113, 0.7)';
+                        resultInterval.style.left = `${((set.min - minVal) / (maxVal - minVal)) * 100}%`;
+                        resultInterval.style.width = `${((set.max - set.min) / (maxVal - minVal)) * 100}%`;
+                        numberLineMarkers.appendChild(resultInterval);
+                    });
+                } else if (!isNaN(result.min) && !isNaN(result.max)) {
+                    const resultInterval = document.createElement('div');
+                    resultInterval.className = 'operation-result';
+                    resultInterval.style.backgroundColor = 'rgba(46, 204, 113, 0.7)';
+                    resultInterval.style.left = `${((result.min - minVal) / (maxVal - minVal)) * 100}%`;
+                    resultInterval.style.width = `${((result.max - result.min) / (maxVal - minVal)) * 100}%`;
+                    numberLineMarkers.appendChild(resultInterval);
+                }
+            }
+            
+            // Inisialisasi
+            updateSets();
+        });
+    </script>
+</body>
+</html>
